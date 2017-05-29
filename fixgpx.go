@@ -5,7 +5,7 @@ import (
 	"time"
 	"os"
 	"regexp"
-	//"strings"
+	"strings"
 	"bufio"
 )
 
@@ -124,4 +124,63 @@ func GetTimeDelta(lines []string) (int64, error) {
 	}
 	// return to keep the compiler happy, shouldn't get here
 	return 0, fmt.Errorf("getTimeDelta: Error: reached final return and shouldn't have")
+}
+
+// correct a time string given an epoch delta
+func fixTimeDelta(origTime string, delta int64) (string, error) {
+	origEpoch, err := iso2epoch(origTime)
+	if err != nil {
+		return "", fmt.Errorf("fixTimeDelta: Error converting %s: %v", origTime, err)
+	}
+	newEpoch := origEpoch - delta
+	return epoch2iso(newEpoch), nil
+}
+
+// write the fixed gpx file
+func WriteFixedGPX(gpxout string, lines []string, delta int64) error {
+
+	// open the output file
+	fdout, fderr := os.Create(gpxout)
+	if fderr != nil {
+		return fmt.Errorf("WriteFixedGPX: Error opening gpx output file %s for write: %v\n", gpxout, fderr)
+	}
+	defer fdout.Close()
+
+	// state variable
+	inTrk := false
+	
+	// write the new version of the file
+	for _, line := range lines {
+
+		fixedLine := line // default to no change
+
+		// entering trk tag
+		if trkStartRm := trkStartTagRE.FindStringSubmatch(line) ; trkStartRm != nil {
+			inTrk = true
+		}
+
+		// leaving trk tag
+		if trkEndRm := trkEndTagRE.FindStringSubmatch(line) ; trkEndRm != nil {
+			inTrk = false
+		}
+
+		// fix all time tags inside the <trk> tag
+		if inTrk {
+			match := timeTagRE.FindStringSubmatch(line)
+			if match != nil{
+				origTime := match[1]
+				fixedTime, fterr := fixTimeDelta(origTime, delta)
+				if fterr != nil {
+					return fmt.Errorf("WriteFixedTCX: Error: %v\n", fterr)
+				}
+				fixedLine = strings.Replace(line, origTime, fixedTime, 1)
+			}
+		}
+		
+		_, perr := fmt.Fprintln(fdout, fixedLine)
+		if perr != nil {
+			return fmt.Errorf("WriteFixedTCX: Error writing line %s: %v\n", fixedLine, perr)
+		}
+	}
+	return nil
 }

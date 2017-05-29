@@ -1,6 +1,12 @@
 package fixgpx
 
-import "testing"
+import ("testing"
+	"crypto/sha1"
+	"fmt"
+	"bytes"
+	"os"
+	"io"
+)
 
 func TestEpoch2iso(t *testing.T) {
 
@@ -86,4 +92,88 @@ func TestGetTimeDelta(t *testing.T) {
 	if res != goldenDelta {
 		t.Errorf("getTimeDelta return %d instead of %d as expected", res, goldenDelta)
 	}
+}
+
+func TestFixTimeDelta(t *testing.T) {
+
+	testIso := "2017-03-01T23:15:45.000Z"
+	testDelta := int64(611263)
+	goldenIso := "2017-02-22T21:28:02.000Z"
+
+	res, err := fixTimeDelta(testIso, testDelta)
+
+	if err != nil {
+		t.Errorf("fixTimeDelta returned an unexpected error for %s, %d: %v", testIso, testDelta, err)
+	}
+	
+	if res != goldenIso {
+		t.Errorf("fixTimeDelta returned %s instead of the expected %s", res, goldenIso)
+	}
+}
+
+
+func TestWriteFixedGPX(t *testing.T) {
+
+	testFile := "./testdata/sample.gpx"
+	testOutFile := "./testdata/testFixedGPX.gpx"
+	goldenFile := "./testdata/goldenFixedGPX.gpx"
+	testDelta := int64(611263)
+	testLineBuf, lberr := loadGPXIn(testFile)
+	if lberr != nil {
+		t.Errorf("LoadGPXIn (TestWriteFixedGPX) error opening %s: %v", testFile, lberr)
+	}
+
+	// generate the fixed version
+	fxerr := WriteFixedGPX(testOutFile, testLineBuf, testDelta)
+
+	if fxerr != nil {
+		t.Errorf("WriteFixedGPX: returned an unexpected error writing: %s: %v", testOutFile, fxerr)
+	}
+
+	// compare the hashes of the new fixed file and the golden result
+	fixedHash, sherr := Fsha(testOutFile)
+	if sherr != nil {
+		t.Errorf("TestWriteFixedGPX: error somputing sha1 of %s: %v", testOutFile, sherr)
+	}
+	
+	goldenFixedHash, gerr := Fsha(goldenFile)
+	if gerr != nil {
+		t.Errorf("TestWriteFixedGPX: error somputing sha1 of %s: %v", goldenFile, gerr)
+	}
+
+	if !bytes.Equal(fixedHash, goldenFixedHash) {
+		t.Errorf("testWriteFixedGPX: error comparing result file hashes %v vs %v", fixedHash, goldenFixedHash)
+	}
+	
+}
+
+// helper function to compute the sha1 hash
+func Fsha(filename string) ([]byte, error) {
+
+        fd, err := os.Open(filename)
+        if err != nil {
+                return []byte{}, fmt.Errorf("Fsha: error opening %s: %v", filename, err) 
+        }
+
+        // create buffer in correct blocksize
+        buf := make([]byte, 65536)
+
+        // create hash
+        h := sha1.New()
+
+        for {
+
+                n, err := fd.Read(buf)
+                if err != nil && err != io.EOF {
+			return []byte{}, fmt.Errorf("Fsha: error reading from %s: %v", filename, err) 
+		}
+                if n == 0 { break }
+
+                // update the hash
+                h.Write(buf[:n])
+        }
+
+        fd.Close()
+
+	return h.Sum(nil), nil
 }
