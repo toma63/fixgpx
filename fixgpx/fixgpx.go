@@ -34,7 +34,7 @@ func main () {
 	fmt.Printf("Time delta is: %d\n", delta)
 
 	// write the repaired file
-	fterr := fixgpx.WriteFixedGPX(*tcxout, lineBuf, delta)
+	fterr := fixgpx.WriteFixedGPX(*gpxout, lineBuf, delta)
 	if fterr != nil {
 		fmt.Printf("fixgpx: error writing repaired file: %v\n", fterr)
 		os.Exit(1)
