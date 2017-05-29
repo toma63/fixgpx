@@ -40,7 +40,7 @@ func TestLoadGPXIn(t *testing.T) {
 
 	testFile := "./testdata/sample.gpx"
 
-	lineBufUT, err := loadGPXIn(testFile)
+	lineBufUT, err := LoadGPXIn(testFile)
 	if err != nil {
 		t.Errorf("LoadGPXIn returned an unexpected error opening %s: %v", testFile, err)
 	}
@@ -118,7 +118,7 @@ func TestWriteFixedGPX(t *testing.T) {
 	testOutFile := "./testdata/testFixedGPX.gpx"
 	goldenFile := "./testdata/goldenFixedGPX.gpx"
 	testDelta := int64(611263)
-	testLineBuf, lberr := loadGPXIn(testFile)
+	testLineBuf, lberr := LoadGPXIn(testFile)
 	if lberr != nil {
 		t.Errorf("LoadGPXIn (TestWriteFixedGPX) error opening %s: %v", testFile, lberr)
 	}

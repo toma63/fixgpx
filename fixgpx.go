@@ -41,7 +41,7 @@ func epoch2iso(epoch int64) string {
 
 // load the entire input file into a string slice
 // allow multiple passes
-func loadGPXIn(gpxin string) ([]string, error) {
+func LoadGPXIn(gpxin string) ([]string, error) {
 
 	// buffer for lines in the file
 	lineBuf := []string{}
