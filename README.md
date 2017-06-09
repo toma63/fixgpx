@@ -11,6 +11,7 @@ Fixgpx can be build with the standard go tools.  With the GOPATH environment var
 pointing to your workspace, run the folloing commands.
 
 % go get github.com/toma63fixgpx
+
 % cd $GOPATH/src/github.com/toma63/fixgpx
 
 ## run unit tests
@@ -20,12 +21,15 @@ pointing to your workspace, run the folloing commands.
 ## With tests passing, build and install the library
 
 % go build
+
 % go install
 
 ## build the spplication
 
 % cd fixgpx
+
 % go build
+
 % go install
 
 The application will noe be available in $GOPATH/bin.
