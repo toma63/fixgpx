@@ -10,7 +10,7 @@ could be used to find and fix other types of corruption given an example.
 Fixgpx can be built with the standard go tools.  With the GOPATH environment variable 
 pointing to your workspace, run the following commands.
 
-% go get github.com/toma63fixgpx
+% go get github.com/toma63/fixgpx
 
 % cd $GOPATH/src/github.com/toma63/fixgpx
 
