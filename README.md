@@ -8,7 +8,7 @@ could be used to find and fix other types of corruption given an example.
 
 # Build Instructions
 Fixgpx can be built with the standard go tools.  With the GOPATH environment variable 
-pointing to your workspace, run the folloing commands.
+pointing to your workspace, run the following commands.
 
 % go get github.com/toma63fixgpx
 
