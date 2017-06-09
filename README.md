@@ -18,13 +18,13 @@ pointing to your workspace, run the folloing commands.
 
 % go test
 
-## With tests passing, build and install the library
+## with tests passing, build and install the library
 
 % go build
 
 % go install
 
-## build the spplication
+## build the application
 
 % cd fixgpx
 
