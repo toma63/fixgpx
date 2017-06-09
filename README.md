@@ -7,7 +7,7 @@ is the only corruption case I have seen on my device.  The package
 could be used to find and fix other types of corruption given an example.
 
 # Build Instructions
-Fixgpx can be build with the standard go tools.  With the GOPATH environment variable 
+Fixgpx can be built with the standard go tools.  With the GOPATH environment variable 
 pointing to your workspace, run the folloing commands.
 
 % go get github.com/toma63fixgpx
@@ -32,9 +32,9 @@ pointing to your workspace, run the folloing commands.
 
 % go install
 
-The application will noe be available in $GOPATH/bin.
+The application will now be available in $GOPATH/bin.
 
-I have built it successfully on MacOSX Mavericks, Ubuntu Mate on Rapsberry pi3, and WIndows 10.
+I have built it successfully on MacOSX Mavericks, Ubuntu Mate on Rapsberry pi3, and Windows 10.
 
 # Usage
 % fixgpx -gpxin corrupted-gpx -gpxout repaired-gpx
